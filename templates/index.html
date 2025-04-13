@@ -97,12 +97,21 @@
                         <canvas id="canvas" class="hidden"></canvas>
                     </div>
 
+                    <div id="processingIndicator" class="hidden mt-4 text-center">
+                        <div
+                            class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 text-indigo-600">
+                        </div>
+                        <p class="mt-2 text-indigo-600">Processing image...</p>
+                    </div>
+
                     <div class="flex flex-wrap gap-5 mt-6 justify-center">
-                        <button id="showOriginalBtn" class="btn-primary px-6 py-3 rounded-lg shadow-md bg-blue-500 text-white hover:bg-blue-600 transition-all">
+                        <button id="showOriginalBtn"
+                            class="btn-primary px-6 py-3 rounded-lg shadow-md bg-blue-500 text-white hover:bg-blue-600 transition-all">
                             <i class="fas fa-image mr-2"></i>
                             Original Image
                         </button>
-                        <button id="showHeatmapBtn" class="btn-secondary px-6 py-3 rounded-lg shadow-md bg-red-500 text-white hover:bg-red-600 transition-all">
+                        <button id="showHeatmapBtn"
+                            class="btn-secondary px-6 py-3 rounded-lg shadow-md bg-red-500 text-white hover:bg-red-600 transition-all">
                             <i class="fas fa-fire mr-2"></i>
                             Heatmap Image
                         </button>
@@ -134,7 +143,7 @@
                         <!-- # Feature Analysis -->
                         <div id="featureAnalysis" class="hidden">
                             <h3 class="font-medium text-gray-900 mb-3 flex items-center">
-                                <i class="fas fa-list-check mr-2 text-blue-500"></i>
+                                <i class="fas fa-list-check mr-2 text-indigo-600"></i>
                                 Feature Analysis
                             </h3>
                             <div class="bg-gray-50 rounded-lg p-4">
