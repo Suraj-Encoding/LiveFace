@@ -16,9 +16,6 @@ load_dotenv()
 # Get all the environment variables from '.env' file
 SERVER_URI = os.getenv('SERVER_URI')
 PORT = int(os.getenv('PORT'))
-API_URL = os.getenv('APP_URL')
-ORIGINAL_IMAGE_PATH = os.getenv('ORIGINAL_IMAGE_PATH')
-HEATMAP_IMAGE_PATH = os.getenv('HEATMAP_IMAGE_PATH')
 FEATURE_EXTRACTOR_URL = os.getenv('FEATURE_EXTRACTOR_URL')
 FUSION_MODEL_URL = os.getenv('FUSION_MODEL_URL')
 
@@ -46,9 +43,6 @@ app.config['ALLOWED_EXTENSIONS'] = {'.h5'}
 # Set all the environment variables in flask app config
 app.config['SERVER_URI'] = SERVER_URI
 app.config['PORT'] = PORT
-app.config['API_URL'] = API_URL
-app.config['ORIGINAL_IMAGE_PATH'] = ORIGINAL_IMAGE_PATH
-app.config['HEATMAP_IMAGE_PATH'] = HEATMAP_IMAGE_PATH
 app.config['FEATURE_EXTRACTOR_URL'] = FEATURE_EXTRACTOR_URL
 app.config['FUSION_MODEL_URL'] = FUSION_MODEL_URL
 
@@ -80,14 +74,14 @@ except Exception as e:
     print(f"error loading models: {e}")
     model_loaded = False
 
-# Frontend Dashboard Route - Home Route #
-@app.route('/')
+# Home Route - Dashboard #
+@app.route('/', methods=['GET'])
 def home():
     # Serve the main page
     return render_template('index.html', model_status=model_loaded)
 
-# Get Uploaded Image #
-@app.route('/api/v1/uploads/<image_name>')
+# Get Uploaded Image API #
+@app.route('/api/v1/uploads/<image_name>', methods=['GET']) 
 def get_uploaded_image(image_name):
     return send_from_directory(UPLOAD_FOLDER, image_name)
 
