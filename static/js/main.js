@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // # State Variables
     let stream = null;
-    let originalImagePath = '../../uploads/input_image.png';
-    let heatmapImagePath = '../uploads/heatmap_image.png';
+    let originalImagePath = '/api/v1/uploads/input_image.png';
+    let heatmapImagePath = '/api/v1/uploads/heatmap_image.png';
 
     // # Event Listeners
     uploadBtn.addEventListener('click', () => fileInput.click());
@@ -194,10 +194,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // # Update UI with results
         resultsContainer.classList.remove('hidden');
         resultsDefaultState.classList.add('hidden');
-
-        // // # Store paths for toggling
-        // originalImagePath = result.originalImagePath;
-        // heatmapImagePath = result.heatmapImagePath;
 
         // # Set result icon and text
         if (result.isReal) {
