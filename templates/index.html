@@ -49,13 +49,13 @@
             <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all">
                 <div class="p-6">
                     <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                        <i class="fas fa-camera mr-2 text-indigo-600"></i>
+                        <i class="fas fa-camera mr-2 text-indigo-700"></i>
                         Input Image
                     </h2>
 
-                    <div class="flex flex-wrap gap-3 mb-6">
+                    <div class="flex flex-wrap gap-5 mb-6">
                         <button id="uploadBtn" class="btn-primary">
-                            <i class="fas fa-upload mr-2 text-gray-900"></i>
+                            <i class="fas fa-upload mr-2 text-green-600"></i>
                             Upload Image
                         </button>
                         <input type="file" id="fileInput" class="hidden" accept="image/*">
@@ -66,7 +66,7 @@
                         </button>
 
                         <button id="resetBtn" class="btn-outline hidden">
-                            <i class="fas fa-redo mr-2"></i>
+                            <i class="fas fa-redo mr-2 text-red-600"></i>
                             Reset
                         </button>
                     </div>
@@ -84,16 +84,6 @@
 
                         <!-- # Image Preview -->
                         <div id="imagePreview" class="hidden w-full h-full flex flex-col items-center justify-center">
-                            <div class="flex gap-2 mb-4">
-                                <button id="showOriginalBtn" class="btn-primary">
-                                    <i class="fas fa-image mr-2"></i>
-                                    Original Image
-                                </button>
-                                <button id="showHeatmapBtn" class="btn-secondary">
-                                    <i class="fas fa-fire mr-2"></i>
-                                    Heatmap Image
-                                </button>
-                            </div>
                             <img id="previewImg" class="max-h-full max-w-full object-contain" alt="Preview">
                         </div>
 
@@ -107,11 +97,15 @@
                         <canvas id="canvas" class="hidden"></canvas>
                     </div>
 
-                    <div id="processingIndicator" class="hidden mt-4 text-center">
-                        <div
-                            class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 text-indigo-600">
-                        </div>
-                        <p class="mt-2 text-indigo-600">Processing image...</p>
+                    <div class="flex flex-wrap gap-5 mt-6 justify-center">
+                        <button id="showOriginalBtn" class="btn-primary px-6 py-3 rounded-lg shadow-md bg-blue-500 text-white hover:bg-blue-600 transition-all">
+                            <i class="fas fa-image mr-2"></i>
+                            Original Image
+                        </button>
+                        <button id="showHeatmapBtn" class="btn-secondary px-6 py-3 rounded-lg shadow-md bg-red-500 text-white hover:bg-red-600 transition-all">
+                            <i class="fas fa-fire mr-2"></i>
+                            Heatmap Image
+                        </button>
                     </div>
                 </div>
             </div>
