@@ -1,6 +1,7 @@
 # Flask Server #
 
 # Required Packages
+import os
 import cv2
 import numpy as np
 from flask import Flask, request, jsonify, render_template
