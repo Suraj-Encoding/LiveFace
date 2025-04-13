@@ -6,7 +6,7 @@ import requests
 import numpy as np
 import base64
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 from liveness_detector import LivenessDetector
 
@@ -74,6 +74,11 @@ except Exception as e:
 def index():
     # Serve the main page
     return render_template('index.html', model_status=model_loaded)
+
+# Get Uploaded Image #
+@app.route('/api/v1/uploads/<image_name>')
+def get_uploaded_image(image_name):
+    return send_from_directory(UPLOAD_FOLDER, image_name)
 
 # Upload Image API #
 @app.route('/api/v1/upload/image', methods=['POST'])

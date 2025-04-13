@@ -202,9 +202,6 @@ class LivenessDetector:
         
         # Save the visualization
         cv2.imwrite(heatmap_image_path, overlay)
-        
-        # Return the path to the saved heatmap
-        return heatmap_image_path
 
     # Predict Liveness #
     def predict_liveness(self, original_image_path):
@@ -246,9 +243,7 @@ class LivenessDetector:
         result = {
             "isReal": bool(is_real),
             "confidence": float(confidence) * 100,
-            "explanations": explanations,
-            "originalImagePath": original_image_path,
-            "heatmapImagePath": heatmap_image_path, 
+            "explanations": explanations
         }
         
         # Return the results
