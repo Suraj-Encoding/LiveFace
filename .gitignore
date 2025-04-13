@@ -8,3 +8,6 @@ uploads
 
 # Models Folder
 models
+
+# Environment Variables
+.env
