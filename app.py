@@ -66,14 +66,14 @@ def upload_image():
             return jsonify({'error': 'invalid image data format'}), 400
             
         # Use static filename
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'input_image.png')
+        input_image_path = os.path.join(app.config['UPLOAD_FOLDER'], 'input_image.png')
         
         # Clear existing heatmap when new image is uploaded
-        heatmap_path = os.path.join(app.config['UPLOAD_FOLDER'], 'heatmap_image.png')
-        if os.path.exists(heatmap_path):
-            os.remove(heatmap_path)
+        heatmap_image_path = os.path.join(app.config['UPLOAD_FOLDER'], 'heatmap_image.png')
+        if os.path.exists(heatmap_image_path):
+            os.remove(heatmap_image_path)
         
-        with open(filepath, 'wb') as f:
+        with open(input_image_path, 'wb') as f:
             f.write(image_bytes)
         
         return jsonify({'success': True})
@@ -91,15 +91,15 @@ def analyze_image():
         return jsonify({'error': 'models not loaded. please check server logs.'}), 500
     
     try:
-        # Use static filepath
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'input_image.png')
+        # Get input image path
+        input_image_path = os.path.join(app.config['UPLOAD_FOLDER'], 'input_image.png')
         
         # Check if file exists
-        if not os.path.exists(filepath):
+        if not os.path.exists(input_image_path):
             return jsonify({'error': 'no image uploaded yet'}), 400
         
         # Process the image
-        result = detector.predict_liveness(filepath)
+        result = detector.predict_liveness(input_image_path)
         
         if 'error' in result:
             return jsonify({'error': result['error']}), 400

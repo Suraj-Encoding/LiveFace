@@ -240,7 +240,7 @@ class LivenessDetector:
         
         # Check if we need to generate a new heatmap
         heatmap_image_path = os.path.join(os.path.dirname(original_image_path), "heatmap_image.png")
-        if not os.path.exists(heatmap_path):
+        if not os.path.exists(heatmap_image_path):
             # Generate heatmap visualization only if it doesn't exist
             self.generate_heatmap(img, is_real, heatmap_image_path)
         
@@ -249,8 +249,8 @@ class LivenessDetector:
             "isReal": bool(is_real),
             "confidence": float(confidence) * 100,
             "explanations": explanations,
-            "imagePath": original_image_path,
-            "heatmapPath": heatmap_image_path, 
+            "originalImagePath": original_image_path,
+            "heatmapImagePath": heatmap_image_path, 
         }
         
         # Return the results

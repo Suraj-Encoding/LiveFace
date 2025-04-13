@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // # State Variables
     let stream = null;
-    let originalImagePath = '../uploads/input_image.png';
+    let originalImagePath = '../../uploads/input_image.png';
     let heatmapImagePath = '../uploads/heatmap_image.png';
 
     // # Event Listeners
@@ -195,9 +195,9 @@ document.addEventListener('DOMContentLoaded', function () {
         resultsContainer.classList.remove('hidden');
         resultsDefaultState.classList.add('hidden');
 
-        // # Store paths for toggling
-        originalImagePath = result.imagePath;
-        heatmapImagePath = result.heatmapPath;
+        // // # Store paths for toggling
+        // originalImagePath = result.originalImagePath;
+        // heatmapImagePath = result.heatmapImagePath;
 
         // # Set result icon and text
         if (result.isReal) {
