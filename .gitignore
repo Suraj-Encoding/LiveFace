@@ -1,0 +1,7 @@
+# Git Ignore Files #
+
+# Python Cache
+__pycache__
+
+# Image Storage Folder
+uploads
