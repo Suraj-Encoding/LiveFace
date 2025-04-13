@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Liveness Detection System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="min-h-screen bg-slate-100">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-700 to-purple-700 text-white shadow-xl">
+        <div class="container mx-auto py-6 px-4">
+            <h1 class="text-3xl font-bold tracking-tight">Face Liveness Detection System</h1>
+            <p class="mt-2 text-blue-100">Advanced AI-powered system to detect real vs. fake faces</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Left Column - Input -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all">
+                <div class="p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-camera mr-2 text-blue-500"></i>
+                        Input Image
+                    </h2>
+
+                    <div class="flex flex-wrap gap-3 mb-6">
+                        <button id="uploadBtn" class="btn-primary">
+                            <i class="fas fa-upload mr-2"></i>
+                            Upload Image
+                        </button>
+                        <input type="file" id="fileInput" class="hidden" accept="image/*">
+
+                        <button id="cameraBtn" class="btn-secondary">
+                            <i class="fas fa-video mr-2"></i>
+                            Use Camera
+                        </button>
+
+                        <button id="resetBtn" class="btn-outline hidden">
+                            <i class="fas fa-redo mr-2"></i>
+                            Reset
+                        </button>
+                    </div>
+
+                    <div id="imageContainer"
+                        class="relative border-2 border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center bg-gray-50 h-80">
+                        <!-- Camera view will be shown here -->
+                        <div id="cameraView" class="hidden w-full h-full relative">
+                            <video id="video" class="w-full h-full object-cover" autoplay playsinline></video>
+                            <button id="captureBtn"
+                                class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white p-3 rounded-full shadow-lg hover:bg-red-700 focus:outline-none transition-all">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+
+                        <!-- Image preview will be shown here -->
+                        <div id="imagePreview" class="hidden w-full h-full flex flex-col items-center justify-center">
+                            <div class="flex gap-2 mb-4">
+                                <button id="showOriginalBtn" class="btn-primary">
+                                    <i class="fas fa-image mr-2"></i>
+                                    Original Image
+                                </button>
+                                <button id="showHeatmapBtn" class="btn-secondary">
+                                    <i class="fas fa-fire mr-2"></i>
+                                    Heatmap
+                                </button>
+                            </div>
+                            <img id="previewImg" class="max-h-full max-w-full object-contain" alt="Preview">
+                        </div>
+
+                        <!-- Default state -->
+                        <div id="defaultState" class="text-center">
+                            <i class="fas fa-image text-gray-300 text-5xl mb-3"></i>
+                            <p class="text-gray-500">No image selected</p>
+                            <p class="text-gray-400 text-sm mt-1">Upload an image or use your camera</p>
+                        </div>
+
+                        <canvas id="canvas" class="hidden"></canvas>
+                    </div>
+
+                    <div id="processingIndicator" class="hidden mt-4 text-center">
+                        <div
+                            class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500">
+                        </div>
+                        <p class="mt-2 text-blue-600">Processing image...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Results -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all">
+                <div class="p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-chart-pie mr-2 text-blue-500"></i>
+                        Analysis Results
+                    </h2>
+
+                    <!-- Results will be displayed here -->
+                    <div id="resultsContainer" class="hidden space-y-6">
+                        <!-- Result summary -->
+                        <div id="resultSummary" class="p-4 rounded-lg flex items-center">
+                            <div class="flex-shrink-0 mr-4">
+                                <i id="resultIcon" class="fas fa-5x"></i>
+                            </div>
+                            <div>
+                                <h3 id="resultText" class="text-2xl font-bold"></h3>
+                                <p id="confidenceText" class="text-lg mt-1"></p>
+                            </div>
+                        </div>
+
+                        <!-- Feature analysis -->
+                        <div id="featureAnalysis" class="hidden">
+                            <h3 class="font-medium text-gray-900 mb-3 flex items-center">
+                                <i class="fas fa-list-check mr-2 text-blue-500"></i>
+                                Feature Analysis
+                            </h3>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div id="explanationsList" class="space-y-4">
+                                    <!-- Explanations will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Real face analysis -->
+                        <div id="realFaceAnalysis" class="hidden">
+                            <h3 class="font-medium text-gray-900 mb-3 flex items-center">
+                                <i class="fas fa-check-circle mr-2 text-green-500"></i>
+                                Real Face Analysis
+                            </h3>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div id="realFaceDetails" class="space-y-4">
+                                    <!-- Real face details will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Default state -->
+                    <div id="resultsDefaultState" class="flex flex-col items-center justify-center h-80 text-gray-400">
+                        <i class="fas fa-search text-6xl mb-4 text-gray-300"></i>
+                        <p class="text-center">Upload or capture an image to see detection results</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Explanation Section -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg overflow-hidden transition-all">
+            <div class="p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-microchip mr-2 text-blue-500"></i>
+                    How It Works
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div
+                        class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-brain text-4xl text-blue-500"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-center mb-2">Dual-Stream AI</h3>
+                        <p class="text-gray-600 text-sm">Our system combines deep CNN features with Haar wavelet
+                            analysis to detect both visual patterns and textural inconsistencies in fake images.</p>
+                    </div>
+
+                    <div
+                        class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-fingerprint text-4xl text-blue-500"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-center mb-2">Pattern Recognition</h3>
+                        <p class="text-gray-600 text-sm">We analyze micro-textures, color distributions, and reflectance
+                            patterns that are nearly impossible to perfectly replicate in synthetic images.</p>
+                    </div>
+
+                    <div
+                        class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-lightbulb text-4xl text-blue-500"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-center mb-2">Explainable AI</h3>
+                        <p class="text-gray-600 text-sm">Our system not only detects fake images but explains why they
+                            were flagged, highlighting the specific inconsistencies detected in the image.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-8">
+        <div class="container mx-auto py-6 px-4">
+            <p class="text-center text-gray-400">
+                © 2025 Face Liveness Detection | Final Year Project
+            </p>
+        </div>
+    </footer>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="../static/js/main.js"></script>
+</body>
+
+</html>
