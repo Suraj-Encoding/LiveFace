@@ -71,7 +71,7 @@ except Exception as e:
 
 # Frontend Dashboard Route - Home Route #
 @app.route('/')
-def index():
+def home():
     # Serve the main page
     return render_template('index.html', model_status=model_loaded)
 

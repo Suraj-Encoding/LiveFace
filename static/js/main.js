@@ -1,17 +1,21 @@
 // # App JavaScript #
 
-document.addEventListener('DOMContentLoaded', function () {
+// # Event Listener 
+document.addEventListener('DOMContentLoaded', main)
+
+// # Main Function
+function main() {
     // # DOM Elements
     const uploadBtn = document.getElementById('uploadBtn');
     const cameraBtn = document.getElementById('cameraBtn');
+    const captureBtn = document.getElementById('captureBtn');
     const resetBtn = document.getElementById('resetBtn');
     const fileInput = document.getElementById('fileInput');
     const video = document.getElementById('video');
-    const captureBtn = document.getElementById('captureBtn');
     const canvas = document.getElementById('canvas');
     const previewImg = document.getElementById('previewImg');
-    const showOriginalBtn = document.getElementById('showOriginalBtn');
-    const showHeatmapBtn = document.getElementById('showHeatmapBtn');
+    const showOriginalImageBtn = document.getElementById('showOriginalImageBtn');
+    const showHeatmapImageBtn = document.getElementById('showHeatmapImageBtn');
     const resultsContainer = document.getElementById('resultsContainer');
     const resultsDefaultState = document.getElementById('resultsDefaultState');
     const processingIndicator = document.getElementById('processingIndicator');
@@ -22,7 +26,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const realFaceAnalysis = document.getElementById('realFaceAnalysis');
     const explanationsList = document.getElementById('explanationsList');
     const realFaceDetails = document.getElementById('realFaceDetails');
+    const cameraView = document.getElementById('cameraView');
+    const imagePreview = document.getElementById('imagePreview');
+    const defaultState = document.getElementById('defaultState');
+    const toastContainer = document.getElementById('toastContainer');
 
+    const serverURL = 'http://localhost:3000/api/v1';
 
     // # State Variables
     let stream = null;
@@ -31,21 +40,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // # Event Listeners
     uploadBtn.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', handleFileUpload);
+    fileInput.addEventListener('change', uploadImage);
     cameraBtn.addEventListener('click', startCamera);
     captureBtn.addEventListener('click', captureImage);
     resetBtn.addEventListener('click', resetState);
-    showOriginalBtn.addEventListener('click', () => showImage('original'));
-    showHeatmapBtn.addEventListener('click', () => showImage('heatmap'));
+    showOriginalImageBtn.addEventListener('click', () => showImage('original'));
+    showHeatmapImageBtn.addEventListener('click', () => showImage('heatmap'));
 
     // # Start Camera Function
     async function startCamera() {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
-            document.getElementById('cameraView').classList.remove('hidden');
-            document.getElementById('defaultState').classList.add('hidden');
-            document.getElementById('imagePreview').classList.add('hidden');
+            cameraView.classList.remove('hidden');
+            imagePreview.classList.add('hidden');
+            defaultState.classList.add('hidden');
             cameraBtn.disabled = true;
             uploadBtn.disabled = true;
         } catch (err) {
@@ -64,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // # File Upload Function
-    function handleFileUpload(event) {
+    function uploadImage(event) {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
@@ -79,24 +88,23 @@ document.addEventListener('DOMContentLoaded', function () {
     function showImage(type) {
         if (type === 'original') {
             previewImg.src = originalImagePath;
-            showOriginalBtn.classList.add('bg-blue-600');
-            showHeatmapBtn.classList.remove('bg-purple-600');
+            showOriginalImageBtn.classList.add('bg-blue-600');
+            showHeatmapImageBtn.classList.remove('bg-purple-600');
         } else {
             previewImg.src = heatmapImagePath;
-            showHeatmapBtn.classList.add('bg-purple-600');
-            showOriginalBtn.classList.remove('bg-blue-600');
+            showHeatmapImageBtn.classList.add('bg-purple-600');
+            showOriginalImageBtn.classList.remove('bg-blue-600');
         }
     }
 
-    // # Toast Notification Function
+    // # Show Toast Notification Function
     function showToast(message, type = 'success') {
-        const toastContainer = document.getElementById('toastContainer');
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
 
         const icon = document.createElement('span');
         icon.className = 'toast-icon';
-        icon.innerHTML = type === 'success' ? '✓' : '✕';
+        icon.innerHTML = type === 'success' ? '✔️' : '❌';
 
         const messageSpan = document.createElement('span');
         messageSpan.className = 'toast-message';
@@ -104,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const closeBtn = document.createElement('button');
         closeBtn.className = 'ml-2 text-sm font-medium';
-        closeBtn.innerHTML = '×';
+        closeBtn.innerHTML = 'X';
         closeBtn.onclick = () => {
             toast.classList.add('hide');
             setTimeout(() => {
@@ -146,15 +154,20 @@ document.addEventListener('DOMContentLoaded', function () {
             resultsDefaultState.classList.add('hidden');
 
             // # Upload the image
-            const uploadResponse = await fetch('http://localhost:3000/api/v1/upload/image', {
+            const uploadImageEndpoint = serverURL + '/upload/image';
+            const uploadImageRequest = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ imageData }),
-            });
+            }
+            const uploadImageResponse = await fetch(
+                uploadImageEndpoint,
+                uploadImageRequest
+            )
 
-            if (!uploadResponse.ok) {
+            if (!uploadImageResponse.ok) {
                 const errorData = await uploadResponse.json();
                 showToast(errorData.error || 'Failed to upload image', 'error');
                 throw new Error(errorData.error || 'failed to upload image');
@@ -163,22 +176,25 @@ document.addEventListener('DOMContentLoaded', function () {
             showToast('Image uploaded successfully!');
 
             // # Analyze the uploaded image
-            const analyzeResponse = await fetch('http://localhost:3000/api/v1/analyze/image', {
-                method: 'POST',
+            const analyzeImageEndpoint = serverURL + '/analyze/image';
+            const analyzeImageRequest = {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({}),
-            });
+                }
+            }
+            const analyzeImageResponse = await fetch(
+                analyzeImageEndpoint,
+                analyzeImageRequest
+            )
 
-            if (!analyzeResponse.ok) {
-                const errorData = await analyzeResponse.json();
+            if (!analyzeImageResponse.ok) {
+                const errorData = await analyzeImageResponse.json();
                 showToast(errorData.error || 'Failed to analyze image', 'error');
                 throw new Error(errorData.error || 'failed to analyze image');
             }
 
-            const result = await analyzeResponse.json();
-            console.log('analysis result:', result);
+            const result = await analyzeImageResponse.json();
             displayResults(result);
             showToast('Analysis completed successfully');
         } catch (error) {
@@ -275,9 +291,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // # Reset UI elements
-        document.getElementById('cameraView').classList.add('hidden');
-        document.getElementById('imagePreview').classList.add('hidden');
-        document.getElementById('defaultState').classList.remove('hidden');
+        cameraView.classList.add('hidden');
+        imagePreview.classList.add('hidden');
+        defaultState.classList.remove('hidden');
         resultsContainer.classList.add('hidden');
         resultsDefaultState.classList.remove('hidden');
         resetBtn.classList.add('hidden');
@@ -288,4 +304,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
         showToast('LiveFace software reset successfully!');
     }
-});
+}
