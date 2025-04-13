@@ -31,12 +31,13 @@ function main() {
     const defaultState = document.getElementById('defaultState');
     const toastContainer = document.getElementById('toastContainer');
 
+    // # Constant Variables
     const serverURL = 'http://localhost:3000/api/v1';
+    const originalImagePath = '/api/v1/uploads/input_image.png';
+    const heatmapImagePath = '/api/v1/uploads/heatmap_image.png';
 
-    // # State Variables
+    // # Video Stream Variable
     let stream = null;
-    let originalImagePath = '/api/v1/uploads/input_image.png';
-    let heatmapImagePath = '/api/v1/uploads/heatmap_image.png';
 
     // # Event Listeners
     uploadBtn.addEventListener('click', () => fileInput.click());
