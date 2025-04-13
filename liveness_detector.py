@@ -116,7 +116,7 @@ class LivenessDetector:
             return sorted(explanations, key=lambda x: x["confidence"], reverse=False)
 
     # Generate Heatmap #
-    def generate_heatmap(self, img, is_real, output_path):
+    def generate_heatmap(self, img, is_real, heatmap_image_path):
         # Generate a heatmap visualization to highlight important regions
         # Resize for visualization
         vis_img = cv2.resize(img, (299, 299))
@@ -203,53 +203,17 @@ class LivenessDetector:
         cv2.putText(overlay, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
         
         # Save the visualization
-        cv2.imwrite(output_path, overlay)
+        cv2.imwrite(heatmap_image_path, overlay)
         
         # Return the path to the saved heatmap
-        return output_path
+        return heatmap_image_path
 
     # Predict Liveness #
-    def predict_liveness(self, image_path):
-        # Predict whether the given image contains a real or fake face
-        
-        # Load image
-        img = cv2.imread(image_path)
-        if img is None:
-            return {"error": "unable to load image. check the file path."}
-
-        # Extract CNN Features (Full Image)
-        cnn_input = self.preprocess_image_for_cnn(img)
-        cnn_features = self.feature_extractor.predict(cnn_input, verbose=0)
-
-        # Extract Haar Features (Full Image)
-        haar_features = self.extract_haar_features(img)
-
-        # Scale Haar Features
-        haar_features_scaled = self.scaler.fit_transform(haar_features)
-
-        # Predict using fusion odel
-        prediction = self.fusion_model.predict([cnn_features, haar_features_scaled], verbose=0)
-        prob = float(prediction[0][0])
-        is_real = prob > 0.5
-        
-        # Calculate confidence
-        confidence = prob if is_real else 1 - prob
-        
-        # Return the results
-        result = {
-            "isReal": bool(is_real),
-            "confidence": float(confidence) * 100,
-            "imagePath": image_path
-        }
-        
-        return result
-
-    # Predict Liveness #
-    def predict_liveness(self, image_path):
+    def predict_liveness(self, original_image_path):
         # Predict whether the given image contains a real or fake face
 
         # Load image
-        img = cv2.imread(image_path)
+        img = cv2.imread(original_image_path)
         if img is None:
             return {"error": f"unable to load image. check the file path."}
 
@@ -275,18 +239,18 @@ class LivenessDetector:
         explanations = self.generate_feature_importance(is_real)
         
         # Check if we need to generate a new heatmap
-        heatmap_path = os.path.join(os.path.dirname(image_path), "heatmap_image.png")
+        heatmap_image_path = os.path.join(os.path.dirname(original_image_path), "heatmap_image.png")
         if not os.path.exists(heatmap_path):
             # Generate heatmap visualization only if it doesn't exist
-            self.generate_heatmap(img, is_real, heatmap_path)
+            self.generate_heatmap(img, is_real, heatmap_image_path)
         
         # Form the result
         result = {
             "isReal": bool(is_real),
             "confidence": float(confidence) * 100,
             "explanations": explanations,
-            "imagePath": image_path,
-            "heatmapPath": heatmap_path, 
+            "imagePath": original_image_path,
+            "heatmapPath": heatmap_image_path, 
         }
         
         # Return the results
