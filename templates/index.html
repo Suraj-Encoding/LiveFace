@@ -16,7 +16,7 @@
     <meta name="theme-color" content="#4F46E5">
 
     <!-- # Web Logo -->
-    <link rel="icon" href="/public/logo.png" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='public/logo.png') }}" type="image/x-icon">
 
     <!-- # Other External CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
@@ -31,14 +31,14 @@
     <!-- # Header -->
     <header class="bg-gradient-to-r bg-indigo-600 text-white shadow-xl">
         <div class="container mx-auto py-6 px-4 flex items-center justify-between">
-            <img src="/public/logo.png" alt="LiveFace Logo" class="h-12 w-12">
+            <img src="{{ url_for('static', filename='public/logo.png') }}" alt="LiveFace Logo" class="h-12 w-12 ml-10">
             <div class="text-center">
                 <h1 class="text-4xl font-extrabold tracking-wide text-yellow-400 drop-shadow-lg">Face Liveness Detection
                     System</h1>
                 <p class="mt-2 text-pink-300 font-mono text-md font-serif">Advanced AI-Powered System To Detect Real V/S
                     Fake Faces</p>
             </div>
-            <img src="/public/logo.png" alt="LiveFace Logo" class="h-12 w-12">
+            <img src="{{ url_for('static', filename='public/logo.png') }}" alt="LiveFace Logo" class="h-12 w-12 mr-10">
         </div>
     </header>
 
@@ -99,7 +99,7 @@
 
                         <!-- # Default Input State -->
                         <div id="defaultState" class="text-center">
-                            <i class="fas fa-image text-gray-300 text-5xl mb-3"></i>
+                            <i class="fas fa-image text-indigo-500 text-5xl mb-3"></i>
                             <p class="text-gray-500">No image selected</p>
                             <p class="text-gray-400 text-sm mt-1">Upload an image or use your camera</p>
                         </div>
@@ -166,7 +166,7 @@
 
                     <!-- # Default Results State -->
                     <div id="resultsDefaultState" class="flex flex-col items-center justify-center h-80 text-gray-400">
-                        <i class="fas fa-search text-6xl mb-4 text-gray-300"></i>
+                        <i class="fas fa-search text-6xl mb-4 text-indigo-500 "></i>
                         <p class="text-center">Upload or capture an image to see detection results</p>
                     </div>
                 </div>
@@ -228,7 +228,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <!-- # Script -->
-    <script src="../static/js/main.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 
 </html>
