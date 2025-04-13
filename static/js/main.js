@@ -1,5 +1,7 @@
+// # App JavaScript #
+
 document.addEventListener('DOMContentLoaded', function () {
-    // DOM Elements
+    // # DOM Elements
     const uploadBtn = document.getElementById('uploadBtn');
     const cameraBtn = document.getElementById('cameraBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -21,12 +23,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const explanationsList = document.getElementById('explanationsList');
     const realFaceDetails = document.getElementById('realFaceDetails');
 
-    // State variables
-    let stream = null;
-    let currentImagePath = '../uploads/input_image.png';
-    let currentHeatmapPath = '../uploads/heatmap_image.png';
 
-    // Event Listeners
+    // # State Variables
+    let stream = null;
+    let originalImagePath = '../uploads/input_image.png';
+    let heatmapImagePath = '../uploads/heatmap_image.png';
+
+    // # Event Listeners
     uploadBtn.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', handleFileUpload);
     cameraBtn.addEventListener('click', startCamera);
@@ -35,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
     showOriginalBtn.addEventListener('click', () => showImage('original'));
     showHeatmapBtn.addEventListener('click', () => showImage('heatmap'));
 
-    // Functions
+    // # Start Camera Function
     async function startCamera() {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -47,10 +50,11 @@ document.addEventListener('DOMContentLoaded', function () {
             uploadBtn.disabled = true;
         } catch (err) {
             console.error('error accessing camera:', err);
-            alert('could not access camera. please check permissions.');
+            showToast('Error accessing camera. Please check permissions.', 'error');
         }
     }
 
+    // # Capture Image Function
     function captureImage() {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -59,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
         processImage(imageData);
     }
 
+    // # File Upload Function
     function handleFileUpload(event) {
         const file = event.target.files[0];
         if (file) {
@@ -70,19 +75,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // # Show Image Function
     function showImage(type) {
         if (type === 'original') {
-            previewImg.src = currentImagePath;
+            previewImg.src = originalImagePath;
             showOriginalBtn.classList.add('bg-blue-600');
             showHeatmapBtn.classList.remove('bg-purple-600');
         } else {
-            previewImg.src = currentHeatmapPath;
+            previewImg.src = heatmapImagePath;
             showHeatmapBtn.classList.add('bg-purple-600');
             showOriginalBtn.classList.remove('bg-blue-600');
         }
     }
 
-    // Toast Notification Functions
+    // # Toast Notification Function
     function showToast(message, type = 'success') {
         const toastContainer = document.getElementById('toastContainer');
         const toast = document.createElement('div');
@@ -111,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         toast.appendChild(closeBtn);
         toastContainer.appendChild(toast);
 
-        // Remove toast after 8 seconds if not manually closed
+        // # Remove the toast after 3 seconds if not manually closed
         const autoClose = setTimeout(() => {
             if (toast.parentNode === toastContainer) {
                 toast.classList.add('hide');
@@ -119,9 +125,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     toastContainer.removeChild(toast);
                 }, 300);
             }
-        }, 8000);
+        }, 3000);
 
-        // Clear timeout if toast is manually closed
+        // # Clear the timeout if toast is manually closed
         toast.onclick = () => {
             clearTimeout(autoClose);
             toast.classList.add('hide');
@@ -131,14 +137,15 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
+    // # Process Image Function
     async function processImage(imageData) {
         try {
-            // Show processing indicator
+            // # Show processing indicator
             processingIndicator.classList.remove('hidden');
             resultsContainer.classList.add('hidden');
             resultsDefaultState.classList.add('hidden');
 
-            // Upload the image
+            // # Upload the image
             const uploadResponse = await fetch('http://localhost:3000/api/v1/upload/image', {
                 method: 'POST',
                 headers: {
@@ -155,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             showToast('Image uploaded successfully!');
 
-            // Analyze the uploaded image
+            // # Analyze the uploaded image
             const analyzeResponse = await fetch('http://localhost:3000/api/v1/analyze/image', {
                 method: 'POST',
                 headers: {
@@ -182,27 +189,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // # Display Results Function
     function displayResults(result) {
-        // Update UI with results
+        // # Update UI with results
         resultsContainer.classList.remove('hidden');
         resultsDefaultState.classList.add('hidden');
 
-        // Store paths for toggling
-        currentImagePath = result.imagePath;
-        currentHeatmapPath = result.heatmapPath;
+        // # Store paths for toggling
+        originalImagePath = result.imagePath;
+        heatmapImagePath = result.heatmapPath;
 
-        // Set result icon and text
+        // # Set result icon and text
         if (result.isReal) {
             resultIcon.className = 'fas fa-check-circle text-green-500';
             resultText.textContent = 'Real Face Detected';
             resultText.className = 'text-green-700';
             confidenceText.textContent = `Confidence: ${result.confidence.toFixed(2)}%`;
 
-            // Show real face analysis
+            // # Show real face analysis
             featureAnalysis.classList.add('hidden');
             realFaceAnalysis.classList.remove('hidden');
 
-            // Display real face details
+            // # Display real face details
             realFaceDetails.innerHTML = `
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
@@ -231,11 +239,11 @@ document.addEventListener('DOMContentLoaded', function () {
             resultText.className = 'text-red-700';
             confidenceText.textContent = `Confidence: ${result.confidence.toFixed(2)}%`;
 
-            // Show feature analysis
+            // # Show feature analysis
             featureAnalysis.classList.remove('hidden');
             realFaceAnalysis.classList.add('hidden');
 
-            // Display explanations
+            // # Display explanations
             explanationsList.innerHTML = '';
             if (result.explanations) {
                 result.explanations.forEach(explanation => {
@@ -253,23 +261,24 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Show image preview with toggle buttons
+        // # Show image preview with toggle buttons
         document.getElementById('imagePreview').classList.remove('hidden');
         document.getElementById('defaultState').classList.add('hidden');
         showImage('original');
 
-        // Show reset button
+        // # Show reset button
         resetBtn.classList.remove('hidden');
     }
 
+    // # Reset State Function
     function resetState() {
-        // Stop camera if active
+        // # Stop camera if active
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
             stream = null;
         }
 
-        // Reset UI elements
+        // # Reset UI elements
         document.getElementById('cameraView').classList.add('hidden');
         document.getElementById('imagePreview').classList.add('hidden');
         document.getElementById('defaultState').classList.remove('hidden');
@@ -281,6 +290,6 @@ document.addEventListener('DOMContentLoaded', function () {
         fileInput.value = '';
         video.srcObject = null;
 
-        showToast('State reset successfully');
+        showToast('LiveFace software reset successfully!');
     }
 });

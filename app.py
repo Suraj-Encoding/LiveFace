@@ -1,3 +1,6 @@
+# Flask Server #
+
+# Required Packages
 import cv2
 import numpy as np
 from flask import Flask, request, jsonify, render_template
@@ -10,14 +13,15 @@ from flask_cors import CORS
 app = Flask(__name__,
             template_folder='templates',
             static_folder='static',)
-        
-CORS(app)  # Enable CORS for all routes
+
+# Enable 'CORS' for all the routes    
+CORS(app) 
 
 # Configure upload folder
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit uploads to 16MB
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit uploads to '16MB'
 
 # Initialize the liveness detector
 model_dir = 'models'
@@ -31,14 +35,16 @@ except Exception as e:
     print(f"error loading models: {e}")
     model_loaded = False
 
+# Frontend Dashboard Route - Home Route #
 @app.route('/')
 def index():
-    """Serve the main page."""
+    # Serve the main page
     return render_template('index.html', model_status=model_loaded)
 
+# Upload Image API #
 @app.route('/api/v1/upload/image', methods=['POST'])
 def upload_image():
-    """Handle image upload and return success status."""
+    # Handle image upload and return success status 
     try:
         # Check if image data is provided
         if 'imageData' not in request.json:
@@ -47,11 +53,11 @@ def upload_image():
         # Get image data from request
         image_data = request.json['imageData']
         
-        # Remove the data:image/jpeg;base64 prefix if present
+        # Remove the 'data:image/jpeg;base64' prefix if present
         if ',' in image_data:
             image_data = image_data.split(',')[1]
         
-        # Decode base64 and save image
+        # Decode 'base64' and save the image
         try:
             image_bytes = base64.b64decode(image_data)
         except:
@@ -74,9 +80,11 @@ def upload_image():
         print(f"error uploading image: {e}")
         return jsonify({'error': f'an error occurred: {str(e)}'}), 500
 
+
+# Analyze Image API #
 @app.route('/api/v1/analyze/image', methods=['POST'])
 def analyze_image():
-    """Process the uploaded image and return liveness detection results."""
+    # Process the uploaded image and return liveness detection results
     if not model_loaded:
         return jsonify({'error': 'models not loaded. please check server logs.'}), 500
     
