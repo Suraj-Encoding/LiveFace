@@ -2,13 +2,22 @@
 
 # Required Packages
 import os
-import cv2
+import requests
 import numpy as np
-from flask import Flask, request, jsonify, render_template
 import base64
-from werkzeug.utils import secure_filename
-from liveness_detector import LivenessDetector
+from dotenv import load_dotenv
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
+from liveness_detector import LivenessDetector
+
+# Load environment variables from a '.env' file
+load_dotenv()
+
+# Get all the environment variables from '.env' file
+SERVER_URI = os.getenv('SERVER_URI')
+PORT = int(os.getenv('PORT'))
+FEATURE_EXTRACTOR_URL = os.getenv('FEATURE_EXTRACTOR_URL')
+FUSION_MODEL_URL = os.getenv('FUSION_MODEL_URL')
 
 # Initialize Flask app
 app = Flask(__name__,
@@ -25,12 +34,35 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit uploads to '16MB'
 
-# Initialize the liveness detector
+# Set all the environment variables in flask app config
+app.config['SERVER_URI'] = SERVER_URI
+app.config['PORT'] = PORT
+app.config['FEATURE_EXTRACTOR_URL'] = FEATURE_EXTRACTOR_URL
+app.config['FUSION_MODEL_URL'] = FUSION_MODEL_URL
+
+# Load the models from URLs or local directory
 model_dir = 'models'
 try:
+    feature_extractor_path = os.path.join(model_dir, 'feature_extractor.h5')
+    fusion_model_path = os.path.join(model_dir, 'fusion_model.h5')
+
+    if FEATURE_EXTRACTOR_URL:
+        # Download the feature extractor file if URL is provided
+        if not os.path.exists(feature_extractor_path):
+            with open(feature_extractor_path, 'wb') as f:
+                feature_extractor_data = requests.get(FEATURE_EXTRACTOR_URL).content
+                f.write(feature_extractor_data)
+
+    if FUSION_MODEL_URL:
+        # Download the fusion model file if URL is provided
+        if not os.path.exists(fusion_model_path):
+            with open(fusion_model_path, 'wb') as f:
+                fusion_model_data = requests.get(FUSION_MODEL_URL).content
+                f.write(fusion_model_data)
+
     detector = LivenessDetector(
-        feature_extractor_path=os.path.join(model_dir, 'feature_extractor.h5'),
-        fusion_model_path=os.path.join(model_dir, 'fusion_model.h5')
+        feature_extractor_path=feature_extractor_path,
+        fusion_model_path=fusion_model_path
     )
     model_loaded = True
 except Exception as e:
@@ -112,4 +144,4 @@ def analyze_image():
 
 if __name__ == '__main__':
     print(f"model loading status: {'success' if model_loaded else 'failed'}")
-    app.run(debug=True, host='localhost', port=3000)
+    app.run(debug=True, host=SERVER_URI, port=PORT)

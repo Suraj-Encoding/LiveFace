@@ -1,15 +1,13 @@
 # Liveness Detector Script #
 
 # Required Packages
+import os
 import cv2
 import numpy as np
-import tensorflow as tf
-import pandas as pd
 import pywt
-import os
+import tensorflow as tf
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import StandardScaler
-import base64
 
 # Liveness Detector Class
 class LivenessDetector:
