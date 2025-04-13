@@ -29,10 +29,16 @@
 
 <body class="min-h-screen bg-slate-100">
     <!-- # Header -->
-    <header class="bg-gradient-to-r from-blue-700 to-purple-700 text-white shadow-xl">
-        <div class="container mx-auto py-6 px-4">
-            <h1 class="text-3xl font-bold tracking-tight">Face Liveness Detection System</h1>
-            <p class="mt-2 text-blue-100">Advanced AI-Powered System To Detect Real V/S Fake Faces!</p>
+    <header class="bg-gradient-to-r bg-indigo-600 text-white shadow-xl">
+        <div class="container mx-auto py-6 px-4 flex items-center justify-between">
+            <img src="/public/logo.png" alt="LiveFace Logo" class="h-12 w-12">
+            <div class="text-center">
+                <h1 class="text-4xl font-extrabold tracking-wide text-yellow-400 drop-shadow-lg">Face Liveness Detection
+                    System</h1>
+                <p class="mt-2 text-pink-300 font-mono text-md font-serif">Advanced AI-Powered System To Detect Real V/S
+                    Fake Faces</p>
+            </div>
+            <img src="/public/logo.png" alt="LiveFace Logo" class="h-12 w-12">
         </div>
     </header>
 
@@ -43,19 +49,19 @@
             <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all">
                 <div class="p-6">
                     <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                        <i class="fas fa-camera mr-2 text-blue-500"></i>
+                        <i class="fas fa-camera mr-2 text-indigo-600"></i>
                         Input Image
                     </h2>
 
                     <div class="flex flex-wrap gap-3 mb-6">
                         <button id="uploadBtn" class="btn-primary">
-                            <i class="fas fa-upload mr-2"></i>
+                            <i class="fas fa-upload mr-2 text-gray-900"></i>
                             Upload Image
                         </button>
                         <input type="file" id="fileInput" class="hidden" accept="image/*">
 
                         <button id="cameraBtn" class="btn-secondary">
-                            <i class="fas fa-video mr-2"></i>
+                            <i class="fas fa-video mr-2 text-pink-600"></i>
                             Use Camera
                         </button>
 
@@ -103,9 +109,9 @@
 
                     <div id="processingIndicator" class="hidden mt-4 text-center">
                         <div
-                            class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500">
+                            class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 text-indigo-600">
                         </div>
-                        <p class="mt-2 text-blue-600">Processing image...</p>
+                        <p class="mt-2 text-indigo-600">Processing image...</p>
                     </div>
                 </div>
             </div>
@@ -114,7 +120,7 @@
             <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all">
                 <div class="p-6">
                     <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                        <i class="fas fa-chart-pie mr-2 text-blue-500"></i>
+                        <i class="fas fa-chart-pie mr-2 text-indigo-600"></i>
                         Analysis Results
                     </h2>
 
@@ -171,7 +177,7 @@
         <div class="mt-8 bg-white rounded-xl shadow-lg overflow-hidden transition-all">
             <div class="p-6">
                 <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-microchip mr-2 text-blue-500"></i>
+                    <i class="fas fa-microchip mr-2 text-indigo-600"></i>
                     How It Works
                 </h2>
 
@@ -179,7 +185,7 @@
                     <div
                         class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all">
                         <div class="text-center mb-3">
-                            <i class="fas fa-brain text-4xl text-blue-500"></i>
+                            <i class="fas fa-brain text-4xl text-indigo-600"></i>
                         </div>
                         <h3 class="font-bold text-lg text-center mb-2">Dual-Stream AI</h3>
                         <p class="text-gray-600 text-sm">Our system combines deep CNN features with Haar wavelet
@@ -189,7 +195,7 @@
                     <div
                         class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all">
                         <div class="text-center mb-3">
-                            <i class="fas fa-fingerprint text-4xl text-blue-500"></i>
+                            <i class="fas fa-fingerprint text-4xl text-indigo-600"></i>
                         </div>
                         <h3 class="font-bold text-lg text-center mb-2">Pattern Recognition</h3>
                         <p class="text-gray-600 text-sm">We analyze micro-textures, color distributions, and reflectance
@@ -199,7 +205,7 @@
                     <div
                         class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all">
                         <div class="text-center mb-3">
-                            <i class="fas fa-lightbulb text-4xl text-blue-500"></i>
+                            <i class="fas fa-lightbulb text-4xl text-indigo-600"></i>
                         </div>
                         <h3 class="font-bold text-lg text-center mb-2">Explainable AI</h3>
                         <p class="text-gray-600 text-sm">Our system not only detects fake images but explains why they
@@ -213,7 +219,7 @@
     <!-- # Footer -->
     <footer class="bg-gray-800 text-white mt-8">
         <div class="container mx-auto py-6 px-4">
-            <p class="text-center text-gray-400">
+            <p class="text-center text-gray-400 font-mono text-sm">
                 Copyright &copy; 2025 - Face Liveness Detection System | PCCoE Pune Campus | All Rights Reserved.
             </p>
         </div>
