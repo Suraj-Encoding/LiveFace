@@ -14,8 +14,12 @@ function main() {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const previewImg = document.getElementById('previewImg');
-    const showOriginalImageBtn = document.getElementById('showOriginalImageBtn');
-    const showHeatmapImageBtn = document.getElementById('showHeatmapImageBtn');
+    const cameraView = document.getElementById('cameraView');
+    const imagePreview = document.getElementById('imagePreview');
+    const defaultState = document.getElementById('defaultState');
+    const toggleImagePreviewButton = document.getElementById('toggleImagePreviewButton');
+    const toggleImagePreviewButtonIcon = document.getElementById('toggleImagePreviewButtonIcon');
+    const toggleImagePreviewButtonText = document.getElementById('toggleImagePreviewButtonText');
     const resultsContainer = document.getElementById('resultsContainer');
     const resultsDefaultState = document.getElementById('resultsDefaultState');
     const processingIndicator = document.getElementById('processingIndicator');
@@ -26,9 +30,6 @@ function main() {
     const realFaceAnalysis = document.getElementById('realFaceAnalysis');
     const explanationsList = document.getElementById('explanationsList');
     const realFaceDetails = document.getElementById('realFaceDetails');
-    const cameraView = document.getElementById('cameraView');
-    const imagePreview = document.getElementById('imagePreview');
-    const defaultState = document.getElementById('defaultState');
     const toastContainer = document.getElementById('toastContainer');
 
     // # Constant Variables
@@ -36,8 +37,9 @@ function main() {
     const originalImagePath = '/api/v1/uploads/input_image.png';
     const heatmapImagePath = '/api/v1/uploads/heatmap_image.png';
 
-    // # Video Stream Variable
-    let stream = null;
+    // # State Variables
+    let stream = null; // # For camera stream
+    let currentImageState = 'original'; // # Can be 'original' or 'heatmap'
 
     // # Event Listeners
     uploadBtn.addEventListener('click', () => fileInput.click());
@@ -45,8 +47,7 @@ function main() {
     cameraBtn.addEventListener('click', startCamera);
     captureBtn.addEventListener('click', captureImage);
     resetBtn.addEventListener('click', resetState);
-    showOriginalImageBtn.addEventListener('click', () => showImage('original'));
-    showHeatmapImageBtn.addEventListener('click', () => showImage('heatmap'));
+    toggleImagePreviewButton.addEventListener('click', showImagePreview);
 
     // # Start Camera Function
     async function startCamera() {
@@ -85,16 +86,26 @@ function main() {
         }
     }
 
-    // # Show Image Function
-    function showImage(type) {
-        if (type === 'original') {
+    // # Show Image Preview Function
+    function showImagePreview() {
+        if (currentImageState === 'original') {
+            // # Show 'original' image
             previewImg.src = originalImagePath;
-            showOriginalImageBtn.classList.add('bg-blue-600');
-            showHeatmapImageBtn.classList.remove('bg-purple-600');
+
+            // # Switch to 'heatmap' image
+            currentImageState = 'heatmap';
+            toggleImagePreviewButton.className = 'px-4 py-2 rounded-lg shadow-md bg-pink-500 text-white hover:bg-pink-600 transition-all';
+            toggleImagePreviewButtonIcon.className = 'fas fa-fire mr-2';
+            toggleImagePreviewButtonText.textContent = 'Heatmap Image';
         } else {
+            // # Show 'heatmap' image
             previewImg.src = heatmapImagePath;
-            showHeatmapImageBtn.classList.add('bg-purple-600');
-            showOriginalImageBtn.classList.remove('bg-blue-600');
+
+            // # Switch to 'original' image
+            currentImageState = 'original';
+            toggleImagePreviewButton.className = 'px-4 py-2 rounded-lg shadow-md bg-indigo-500 text-white hover:bg-indigo-600 transition-all';
+            toggleImagePreviewButtonIcon.className = 'fas fa-image mr-2';
+            toggleImagePreviewButtonText.textContent = 'Original Image';
         }
     }
 
@@ -112,7 +123,7 @@ function main() {
         messageSpan.textContent = message;
 
         const closeBtn = document.createElement('button');
-        closeBtn.className = 'ml-2 text-sm font-medium';
+        closeBtn.className = 'ml-4 text-md text-black font-extrabold';
         closeBtn.innerHTML = 'X';
         closeBtn.onclick = () => {
             toast.classList.add('hide');
@@ -169,7 +180,7 @@ function main() {
             )
 
             if (!uploadImageResponse.ok) {
-                const errorData = await uploadResponse.json();
+                const errorData = await uploadImageResponse.json();
                 showToast(errorData.error || 'Failed to upload image', 'error');
                 throw new Error(errorData.error || 'failed to upload image');
             }
@@ -197,7 +208,7 @@ function main() {
 
             const result = await analyzeImageResponse.json();
             displayResults(result);
-            showToast('Analysis completed successfully');
+            showToast('Analysis completed successfully!');
         } catch (error) {
             console.error('error processing image:', error);
             showToast(error.message, 'error');
@@ -277,10 +288,11 @@ function main() {
         // # Show image preview with toggle buttons
         document.getElementById('imagePreview').classList.remove('hidden');
         document.getElementById('defaultState').classList.add('hidden');
-        showImage('original');
+        showImagePreview('original');
 
         // # Show reset button
         resetBtn.classList.remove('hidden');
+        toggleImagePreviewButton.classList.remove('hidden');
     }
 
     // # Reset State Function

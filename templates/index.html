@@ -105,15 +105,10 @@
                     </div>
 
                     <div class="flex flex-wrap gap-5 mt-6 justify-center">
-                        <button id="showOriginalImageBtn"
-                            class="btn-primary px-6 py-3 rounded-lg shadow-md bg-blue-500 text-white hover:bg-blue-600 transition-all">
-                            <i class="fas fa-image mr-2"></i>
-                            Original Image
-                        </button>
-                        <button id="showHeatmapImageBtn"
-                            class="btn-secondary px-6 py-3 rounded-lg shadow-md bg-red-500 text-white hover:bg-red-600 transition-all">
-                            <i class="fas fa-fire mr-2"></i>
-                            Heatmap Image
+                        <button id="toggleImagePreviewButton"
+                            class="px-4 py-2 rounded-lg shadow-md bg-pink-500 text-white hover:bg-pink-600 transition-all hidden">
+                            <i id="toggleImagePreviewButtonIcon" class="fas fa-fire mr-2"></i>
+                            <span id="toggleImagePreviewButtonText">Heatmap Image</span>
                         </button>
                     </div>
                 </div>
