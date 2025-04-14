@@ -6,9 +6,9 @@ document.addEventListener('DOMContentLoaded', main)
 // # Main Function
 function main() {
     // # DOM Elements
-    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadImageBtn = document.getElementById('uploadImageBtn');
     const cameraBtn = document.getElementById('cameraBtn');
-    const captureBtn = document.getElementById('captureBtn');
+    const captureImageBtn = document.getElementById('captureImageBtn');
     const resetBtn = document.getElementById('resetBtn');
     const fileInput = document.getElementById('fileInput');
     const video = document.getElementById('video');
@@ -17,9 +17,9 @@ function main() {
     const cameraView = document.getElementById('cameraView');
     const imagePreview = document.getElementById('imagePreview');
     const defaultState = document.getElementById('defaultState');
-    const toggleImagePreviewButton = document.getElementById('toggleImagePreviewButton');
-    const toggleImagePreviewButtonIcon = document.getElementById('toggleImagePreviewButtonIcon');
-    const toggleImagePreviewButtonText = document.getElementById('toggleImagePreviewButtonText');
+    const toggleImagePreviewBtn = document.getElementById('toggleImagePreviewBtn');
+    const toggleImagePreviewBtnIcon = document.getElementById('toggleImagePreviewBtnIcon');
+    const toggleImagePreviewBtnText = document.getElementById('toggleImagePreviewBtnText');
     const resultsContainer = document.getElementById('resultsContainer');
     const resultsDefaultState = document.getElementById('resultsDefaultState');
     const processingIndicator = document.getElementById('processingIndicator');
@@ -42,23 +42,31 @@ function main() {
     let currentImageState = 'original'; // # Can be 'original' or 'heatmap'
 
     // # Event Listeners
-    uploadBtn.addEventListener('click', () => fileInput.click());
+    uploadImageBtn.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', uploadImage);
     cameraBtn.addEventListener('click', startCamera);
-    captureBtn.addEventListener('click', captureImage);
+    captureImageBtn.addEventListener('click', captureImage);
     resetBtn.addEventListener('click', resetState);
-    toggleImagePreviewButton.addEventListener('click', showImagePreview);
+    toggleImagePreviewBtn.addEventListener('click', showImagePreview);
 
     // # Start Camera Function
     async function startCamera() {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
+
             cameraView.classList.remove('hidden');
             imagePreview.classList.add('hidden');
             defaultState.classList.add('hidden');
+
+            // # Disable buttons
             cameraBtn.disabled = true;
-            uploadBtn.disabled = true;
+            uploadImageBtn.disabled = true;
+            resetBtn.disabled = true;
+            toggleImagePreviewBtn.disabled = true;
+
+            // # Enable capture image button
+            captureImageBtn.disabled = false;
         } catch (err) {
             console.error('error accessing camera:', err);
             showToast('Error accessing camera. Please check permissions.', 'error');
@@ -94,18 +102,18 @@ function main() {
 
             // # Switch to 'heatmap' image
             currentImageState = 'heatmap';
-            toggleImagePreviewButton.className = 'px-4 py-2 rounded-lg shadow-md bg-pink-500 text-white hover:bg-pink-600 transition-all';
-            toggleImagePreviewButtonIcon.className = 'fas fa-fire mr-2';
-            toggleImagePreviewButtonText.textContent = 'Heatmap Image';
+            toggleImagePreviewBtn.className = 'px-4 py-2 rounded-lg shadow-md bg-pink-500 text-white hover:bg-pink-600 transition-all';
+            toggleImagePreviewBtnIcon.className = 'fas fa-fire mr-2';
+            toggleImagePreviewBtnText.textContent = 'Heatmap Image';
         } else {
             // # Show 'heatmap' image
             previewImg.src = heatmapImagePath;
 
             // # Switch to 'original' image
             currentImageState = 'original';
-            toggleImagePreviewButton.className = 'px-4 py-2 rounded-lg shadow-md bg-indigo-500 text-white hover:bg-indigo-600 transition-all';
-            toggleImagePreviewButtonIcon.className = 'fas fa-image mr-2';
-            toggleImagePreviewButtonText.textContent = 'Original Image';
+            toggleImagePreviewBtn.className = 'px-4 py-2 rounded-lg shadow-md bg-indigo-500 text-white hover:bg-indigo-600 transition-all';
+            toggleImagePreviewBtnIcon.className = 'fas fa-image mr-2';
+            toggleImagePreviewBtnText.textContent = 'Original Image';
         }
     }
 
@@ -292,7 +300,7 @@ function main() {
 
         // # Show reset button
         resetBtn.classList.remove('hidden');
-        toggleImagePreviewButton.classList.remove('hidden');
+        toggleImagePreviewBtn.classList.remove('hidden');
     }
 
     // # Reset State Function
@@ -311,7 +319,7 @@ function main() {
         resultsDefaultState.classList.remove('hidden');
         resetBtn.classList.add('hidden');
         cameraBtn.disabled = false;
-        uploadBtn.disabled = false;
+        uploadImageBtn.disabled = false;
         fileInput.value = '';
         video.srcObject = null;
 
