@@ -52,20 +52,30 @@ function main() {
     // # Start Camera Function
     async function startCamera() {
         try {
+            // # Check if camera is already active
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+
+            // # Start camera stream
             stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
 
+            // # Unhide Elements
             cameraView.classList.remove('hidden');
+
+            // # Hide Elements
             imagePreview.classList.add('hidden');
             defaultState.classList.add('hidden');
 
-            // # Disable buttons
-            cameraBtn.disabled = true;
+            // # Disable Buttons
             uploadImageBtn.disabled = true;
+            cameraBtn.disabled = true;
             resetBtn.disabled = true;
             toggleImagePreviewBtn.disabled = true;
 
-            // # Enable capture image button
+            // # Enable Buttons
             captureImageBtn.disabled = false;
         } catch (err) {
             console.error('error accessing camera:', err);
@@ -73,23 +83,60 @@ function main() {
         }
     }
 
+    // # Stop Camera Function
+    function stopCamera() {
+        // # Stop camera stream if active
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+        video.srcObject = stream;
+    }
+
     // # Capture Image Function
     function captureImage() {
+        // # Reset DOM Elements
+        resetDOMElements();
+
+        // # Get Image Data
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         canvas.getContext('2d').drawImage(video, 0, 0);
         const imageData = canvas.toDataURL('image/png');
+
+        // # Stop Camera
+        stopCamera();
+
+        // # Process Image
         processImage(imageData);
     }
 
-    // # File Upload Function
+    // # Upload Image Function
     function uploadImage(event) {
+        // # Reset DOM Elements
+        resetDOMElements();
+
+        // # Get the selected image file
         const file = event.target.files[0];
-        if (file) {
+
+        // # Check if a file is selected
+        if (!file) {
+            showToast('No image file selected', 'error');
+            return;
+        } else {
+            // # Create a new FileReader instance
             const reader = new FileReader();
+
+            // # Set up the onload event
             reader.onload = (e) => {
-                processImage(e.target.result);
+                // # Get image data
+                const imageData = e.target.result;
+
+                // # Process Image
+                processImage(imageData);
             };
+
+            // # Read the file as a data URL
             reader.readAsDataURL(file);
         }
     }
@@ -303,26 +350,53 @@ function main() {
         toggleImagePreviewBtn.classList.remove('hidden');
     }
 
-    // # Reset State Function
-    function resetState() {
-        // # Stop camera if active
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            stream = null;
-        }
 
-        // # Reset UI elements
+    // # Reset DOM Elements Function
+    function resetDOMElements() {
+        // # Hide Elements
         cameraView.classList.add('hidden');
         imagePreview.classList.add('hidden');
-        defaultState.classList.remove('hidden');
-        resultsContainer.classList.add('hidden');
-        resultsDefaultState.classList.remove('hidden');
-        resetBtn.classList.add('hidden');
-        cameraBtn.disabled = false;
-        uploadImageBtn.disabled = false;
-        fileInput.value = '';
-        video.srcObject = null;
+        defaultState.classList.add('hidden');
 
+        // # Disable Buttons
+        uploadImageBtn.disabled = true;
+        cameraBtn.disabled = true;
+        captureImageBtn.disabled = true;
+
+        // # Enable Buttons
+        resetBtn.disabled = false;
+        toggleImagePreviewBtn.disabled = false;
+    }
+
+    // # Reset State Function
+    function resetState() {
+        // # Stop Camera
+        stopCamera();
+
+        // # Hide Elements
+        cameraView.classList.add('hidden');
+        imagePreview.classList.add('hidden');
+        resetBtn.classList.add('hidden');
+        toggleImagePreviewBtn.classList.add('hidden');
+        resultsContainer.classList.add('hidden');
+
+        // # Unhide Elements
+        defaultState.classList.remove('hidden');
+        resultsDefaultState.classList.remove('hidden');
+
+        // # Disable Buttons
+        captureImageBtn.disabled = true;
+        resetBtn.disabled = true;
+        toggleImagePreviewBtn.disabled = true;
+
+        // # Enable Buttons
+        uploadImageBtn.disabled = false;
+        cameraBtn.disabled = false;
+
+        // # Reset Values
+        fileInput.value = '';
+
+        // # Show Success Toast
         showToast('LiveFace software reset successfully!');
     }
 }
