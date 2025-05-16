@@ -1,13 +1,20 @@
 # CMD #
 
+
+# VIDEO #
+
 #0
 python video_predict.py
 
 #1  
-python video_predict.py -i ./input/video.mp4 -o ./output/video.mp4 -m ./saved_models/model.onnx -t 0.75 
-
-#2
-python video_predict.py -o ./output/video.mp4 -m ./saved_models/yolov5s-face.onnx -t 0.75 
+python video_predict.py -m ./saved_models/AntiSpoofing_print-replay_1.5_128.onnx -t 0.75 
 
 #3
-python video_predict.py -o ./output/video.mp4
+python video_predict.py -o ./output/videos/video.mp4
+
+#4 
+python video_predict.py -i ./input/videos/video.mp4 -o ./output/videos/video.mp4
+
+# IMAGE #
+
+python image_predict.py -i ./input/images/image.png -o ./output/images/image.png
