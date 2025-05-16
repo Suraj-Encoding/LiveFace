@@ -1,0 +1,13 @@
+# CMD #
+
+#0
+python video_predict.py
+
+#1  
+python video_predict.py -i ./input/video.mp4 -o ./output/video.mp4 -m ./saved_models/model.onnx -t 0.75 
+
+#2
+python video_predict.py -o ./output/video.mp4 -m ./saved_models/yolov5s-face.onnx -t 0.75 
+
+#3
+python video_predict.py -o ./output/video.mp4
