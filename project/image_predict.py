@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
-# filepath: /Users/suraj/Documents/College/Major Project/Frontend /project/test_single_image.py
+# filepath: /Users/suraj/Documents/College/Major Project/Frontend /project/image_predict.py
 from src.face_detector import YOLOv5
 from src.FaceAntiSpoofing import AntiSpoof
+import cv2
+import numpy as np
+import argparse
+import os
 import cv2
 import numpy as np
 import argparse
@@ -63,6 +67,9 @@ def test_image(image_path, model_path=None, threshold=0.5, output_path=None):
     """
     if model_path is None:
         model_path = "saved_models/AntiSpoofing_bin_1.5_128.onnx"
+    
+    if output_path is None:
+        output_path = "../uploads/output_image.png"
     
     # Load models
     face_detector = YOLOv5('saved_models/yolov5s-face.onnx')

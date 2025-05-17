@@ -8,7 +8,7 @@ import base64
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
-from liveness_detector import LivenessDetector
+from face_detector import FaceAntiSpoofDetector  # Import new detector
 
 # Load environment variables from a '.env' file
 load_dotenv()
@@ -16,8 +16,6 @@ load_dotenv()
 # Get all the environment variables from '.env' file
 SERVER_URI = os.getenv('SERVER_URI')
 PORT = int(os.getenv('PORT'))
-FEATURE_EXTRACTOR_URL = os.getenv('FEATURE_EXTRACTOR_URL')
-FUSION_MODEL_URL = os.getenv('FUSION_MODEL_URL')
 
 # Initialize Flask app
 app = Flask(__name__,
@@ -34,44 +32,16 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit uploads to '16MB'
 
-# Configure model folder
-MODEL_FOLDER = 'models'
-os.makedirs(MODEL_FOLDER, exist_ok=True)
-app.config['MODEL_FOLDER'] = MODEL_FOLDER
-app.config['ALLOWED_EXTENSIONS'] = {'.h5'}
-
 # Set all the environment variables in flask app config
 app.config['SERVER_URI'] = SERVER_URI
 app.config['PORT'] = PORT
-app.config['FEATURE_EXTRACTOR_URL'] = FEATURE_EXTRACTOR_URL
-app.config['FUSION_MODEL_URL'] = FUSION_MODEL_URL
 
-# Load both the model files from given URLs or local directory
+# Initialize the face anti-spoofing detector
 try:
-    feature_extractor_path = os.path.join(MODEL_FOLDER, 'feature_extractor.h5')
-    fusion_model_path = os.path.join(MODEL_FOLDER, 'fusion_model.h5')
-
-    if FEATURE_EXTRACTOR_URL:
-        # Download the feature extractor file if URL is provided
-        if not os.path.exists(feature_extractor_path):
-            with open(feature_extractor_path, 'wb') as f:
-                feature_extractor_data = requests.get(FEATURE_EXTRACTOR_URL).content
-                f.write(feature_extractor_data)
-
-    if FUSION_MODEL_URL:
-        # Download the fusion model file if URL is provided
-        if not os.path.exists(fusion_model_path):
-            with open(fusion_model_path, 'wb') as f:
-                fusion_model_data = requests.get(FUSION_MODEL_URL).content
-                f.write(fusion_model_data)
-
-    detector = LivenessDetector(
-        feature_extractor_path=feature_extractor_path,
-        fusion_model_path=fusion_model_path
-    )
+    detector = FaceAntiSpoofDetector()
     model_loaded = True
 except Exception as e:
-    print(f"error loading models: {e}")
+    print(f"Error loading models: {e}")
     model_loaded = False
 
 # Home Route - Dashboard #
@@ -140,8 +110,20 @@ def analyze_image():
         if not os.path.exists(input_image_path):
             return jsonify({'error': 'no image uploaded yet'}), 400
         
-        # Process the image
-        result = detector.predict_liveness(input_image_path)
+        # Define output path for processed image with bbox
+        output_image_path = os.path.join(UPLOAD_FOLDER, 'output_image.png')
+        
+        # Define heatmap path
+        heatmap_image_path = os.path.join(UPLOAD_FOLDER, 'heatmap_image.png')
+        
+        # Process the image with the new detector
+        result = detector.predict_liveness(
+            image_path=input_image_path, 
+            output_path=output_image_path,
+            heatmap_path=heatmap_image_path,
+            generate_heatmap=True,
+            threshold=0.5
+        )
         
         if 'error' in result:
             return jsonify({'error': result['error']}), 400
@@ -149,7 +131,7 @@ def analyze_image():
         return jsonify(result)
     
     except Exception as e:
-        print(f"error processing image: {e}")
+        print(f"Error processing image: {e}")
         return jsonify({'error': f'an error occurred: {str(e)}'}), 500
 
 if __name__ == '__main__':
