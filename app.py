@@ -122,7 +122,7 @@ def analyze_image():
             output_path=output_image_path,
             heatmap_path=heatmap_image_path,
             generate_heatmap=True,
-            threshold=0.5
+            threshold=0.75
         )
         
         if 'error' in result:

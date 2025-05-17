@@ -5,9 +5,14 @@ __pycache__
 
 # Image Storage Folder
 uploads
+images
 
 # Models Folder
 models
 
 # Environment Variables
 .env
+
+Images
+Images/output
+Images/sample

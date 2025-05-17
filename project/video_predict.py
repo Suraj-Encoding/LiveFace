@@ -63,7 +63,7 @@ if __name__ == "__main__":
     p.add_argument("--model_path", "-m", type=str, 
                    default="saved_models/AntiSpoofing_bin_1.5_128.onnx", 
                    help="Path to ONNX model")
-    p.add_argument("--threshold", "-t", type=check_zero_to_one, default=0.5, 
+    p.add_argument("--threshold", "-t", type=check_zero_to_one, default=0.75, 
                    help="real face probability threshold above which the prediction is considered true")
     args = p.parse_args()
     

@@ -106,9 +106,21 @@
 
                     <div class="flex flex-wrap gap-5 mt-6 justify-center">
                         <button id="toggleImagePreviewBtn"
+                            class="px-4 py-2 rounded-lg shadow-md bg-indigo-500 text-white hover:bg-indigo-600 transition-all hidden">
+                            <i id="toggleImagePreviewBtnIcon" class="fas fa-image mr-2"></i>
+                            <span id="toggleImagePreviewBtnText">Original Image</span>
+                        </button>
+
+                        <button id="toggleOutputPreviewBtn"
+                            class="px-4 py-2 rounded-lg shadow-md bg-green-500 text-white hover:bg-green-600 transition-all hidden">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <span>Detection Result</span>
+                        </button>
+
+                        <button id="toggleHeatmapPreviewBtn"
                             class="px-4 py-2 rounded-lg shadow-md bg-pink-500 text-white hover:bg-pink-600 transition-all hidden">
-                            <i id="toggleImagePreviewBtnIcon" class="fas fa-fire mr-2"></i>
-                            <span id="toggleImagePreviewBtnText">Heatmap Image</span>
+                            <i class="fas fa-fire mr-2"></i>
+                            <span>Heatmap Image</span>
                         </button>
                     </div>
                 </div>

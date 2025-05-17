@@ -18,8 +18,8 @@ function main() {
     const imagePreview = document.getElementById('imagePreview');
     const defaultState = document.getElementById('defaultState');
     const toggleImagePreviewBtn = document.getElementById('toggleImagePreviewBtn');
-    const toggleImagePreviewBtnIcon = document.getElementById('toggleImagePreviewBtnIcon');
-    const toggleImagePreviewBtnText = document.getElementById('toggleImagePreviewBtnText');
+    const toggleOutputPreviewBtn = document.getElementById('toggleOutputPreviewBtn');
+    const toggleHeatmapPreviewBtn = document.getElementById('toggleHeatmapPreviewBtn');
     const resultsContainer = document.getElementById('resultsContainer');
     const resultsDefaultState = document.getElementById('resultsDefaultState');
     const processingIndicator = document.getElementById('processingIndicator');
@@ -35,11 +35,12 @@ function main() {
     // # Constant Variables
     const serverURL = 'http://localhost:3000/api/v1';
     const originalImagePath = '/api/v1/uploads/input_image.png';
+    const outputImagePath = '/api/v1/uploads/output_image.png';
     const heatmapImagePath = '/api/v1/uploads/heatmap_image.png';
 
     // # State Variables
     let stream = null; // # For camera stream
-    let currentImageState = 'original'; // # Can be 'original' or 'heatmap'
+    let currentImageState = 'original'; // # Can be 'original', 'output', or 'heatmap'
 
     // # Event Listeners
     uploadImageBtn.addEventListener('click', () => fileInput.click());
@@ -47,7 +48,9 @@ function main() {
     cameraBtn.addEventListener('click', startCamera);
     captureImageBtn.addEventListener('click', captureImage);
     resetBtn.addEventListener('click', resetState);
-    toggleImagePreviewBtn.addEventListener('click', showImagePreview);
+    toggleImagePreviewBtn.addEventListener('click', () => switchImageView('original'));
+    toggleOutputPreviewBtn.addEventListener('click', () => switchImageView('output'));
+    toggleHeatmapPreviewBtn.addEventListener('click', () => switchImageView('heatmap'));
 
     // # Start Camera Function
     async function startCamera() {
@@ -142,25 +145,42 @@ function main() {
     }
 
     // # Show Image Preview Function
-    function showImagePreview() {
+    function switchImageView(type) {
+        // Update the current image state
+        currentImageState = type;
+
+        // Set the image source based on the selected type
+        switch (type) {
+            case 'original':
+                previewImg.src = originalImagePath;
+                break;
+            case 'output':
+                previewImg.src = outputImagePath;
+                break;
+            case 'heatmap':
+                previewImg.src = heatmapImagePath;
+                break;
+            default:
+                previewImg.src = originalImagePath;
+        }
+
+        // Update buttons visibility
+        updateImageToggleButtons();
+    }
+
+    // Helper function to update the visibility of toggle buttons
+    function updateImageToggleButtons() {
+        // When viewing the original image, show output and heatmap buttons
         if (currentImageState === 'original') {
-            // # Show 'original' image
-            previewImg.src = originalImagePath;
-
-            // # Switch to 'heatmap' image
-            currentImageState = 'heatmap';
-            toggleImagePreviewBtn.className = 'px-4 py-2 rounded-lg shadow-md bg-pink-500 text-white hover:bg-pink-600 transition-all';
-            toggleImagePreviewBtnIcon.className = 'fas fa-fire mr-2';
-            toggleImagePreviewBtnText.textContent = 'Heatmap Image';
-        } else {
-            // # Show 'heatmap' image
-            previewImg.src = heatmapImagePath;
-
-            // # Switch to 'original' image
-            currentImageState = 'original';
-            toggleImagePreviewBtn.className = 'px-4 py-2 rounded-lg shadow-md bg-indigo-500 text-white hover:bg-indigo-600 transition-all';
-            toggleImagePreviewBtnIcon.className = 'fas fa-image mr-2';
-            toggleImagePreviewBtnText.textContent = 'Original Image';
+            toggleImagePreviewBtn.classList.add('hidden');
+            toggleOutputPreviewBtn.classList.remove('hidden');
+            toggleHeatmapPreviewBtn.classList.remove('hidden');
+        }
+        // When viewing output or heatmap, only show the original button
+        else {
+            toggleImagePreviewBtn.classList.remove('hidden');
+            toggleOutputPreviewBtn.classList.add('hidden');
+            toggleHeatmapPreviewBtn.classList.add('hidden');
         }
     }
 
@@ -262,6 +282,18 @@ function main() {
             }
 
             const result = await analyzeImageResponse.json();
+
+            // Update image paths if provided in the API response
+            if (result.inputImageUrl) {
+                // Optional: update the originalImagePath constant if needed
+            }
+            if (result.outputImageUrl) {
+                // Optional: update the outputImagePath constant if needed
+            }
+            if (result.heatmapImageUrl) {
+                // Optional: update the heatmapImagePath constant if needed
+            }
+
             displayResults(result);
             showToast('Analysis completed successfully!');
         } catch (error) {
@@ -343,11 +375,15 @@ function main() {
         // # Show image preview with toggle buttons
         document.getElementById('imagePreview').classList.remove('hidden');
         document.getElementById('defaultState').classList.add('hidden');
-        showImagePreview('original');
 
-        // # Show reset button
+        // Set the image to original first and update toggle buttons
+        previewImg.src = originalImagePath;
+        currentImageState = 'original';
+
+        // Show reset button and toggle buttons
         resetBtn.classList.remove('hidden');
-        toggleImagePreviewBtn.classList.remove('hidden');
+        toggleOutputPreviewBtn.classList.remove('hidden');
+        toggleHeatmapPreviewBtn.classList.remove('hidden');
     }
 
 
@@ -378,6 +414,8 @@ function main() {
         imagePreview.classList.add('hidden');
         resetBtn.classList.add('hidden');
         toggleImagePreviewBtn.classList.add('hidden');
+        toggleOutputPreviewBtn.classList.add('hidden');
+        toggleHeatmapPreviewBtn.classList.add('hidden');
         resultsContainer.classList.add('hidden');
 
         // # Unhide Elements
