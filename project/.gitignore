@@ -14,3 +14,5 @@ __init.py__
 /input
 /output
 /saved_models
+*.pth 
+*.onnx
